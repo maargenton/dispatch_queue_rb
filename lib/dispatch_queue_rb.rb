@@ -7,7 +7,7 @@
 # Copyright (c) 2016, Marc-Antoine Argenton.  All rights reserved.
 # =============================================================================
 
-
+require 'set'
 
 require_relative 'dispatch_queue_rb/version.rb'
 require_relative 'dispatch_queue_rb/condition_variable_pool.rb'

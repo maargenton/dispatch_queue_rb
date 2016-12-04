@@ -18,17 +18,20 @@ module DispatchQueue
       @parent_queue = parent_queue || Dispatch.default_queue
     end
 
-    def dispatch_async( &task )
-      @parent_queue.dispatch_async do
+    def dispatch_async( group:nil, &task )
+      group.enter() if group
+      continuation = Continuation.new( target_queue:@parent_queue, group:group ) do
         _run_task( task )
-      end if _try_activate_or_enqueue( task )
+      end
+
+      continuation.run() if _try_activate_or_enqueue( continuation )
     end
 
-    def dispatch_sync( &task )
+    def dispatch_sync( group:nil, &task )
       mutex, condition = ConditionVariablePool.acquire()
       mutex.synchronize do
 
-        dispatch_async do
+        dispatch_async( group:group ) do
           task.call()
           mutex.synchronize do
             condition.signal()
@@ -44,13 +47,13 @@ module DispatchQueue
     alias_method :dispatch_barrier_sync, :dispatch_sync
 
   private
-    def _try_activate_or_enqueue( task )
+    def _try_activate_or_enqueue( continuation )
       @mutex.synchronize do
         if (!@active)
           @active = true
           return true
         else
-          @task_list << task
+          @task_list << continuation
           return false
         end
       end
@@ -69,15 +72,13 @@ module DispatchQueue
     end
 
     def _dispatch_next_task()
-      task, target_queue = _suspend_or_next_task()
-      target_queue.dispatch_async do
-        _run_task( task )
-      end if task
+      continuation = _suspend_or_next_task()
+      continuation.run() if continuation
     end
 
     def _suspend_or_next_task()
       @mutex.synchronize do
-        return @task_list.shift, @parent_queue if !@task_list.empty?
+        return @task_list.shift if !@task_list.empty?
         @active = false
         return nil
       end

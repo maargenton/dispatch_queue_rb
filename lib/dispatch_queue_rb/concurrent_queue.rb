@@ -19,10 +19,15 @@ module DispatchQueue
       @barrier_count = 0
     end
 
-    def dispatch_async( &task )
+    def dispatch_async( group:nil, &task )
+      group.enter() if group
+      continuation = Continuation.new( target_queue:@parent_queue, group:group ) do
+        _run_task( task, false )
+      end
+
       schedule_immediately = @mutex.synchronize do
         if ( @barrier_count > 0)
-          @task_list << [task, false]
+          @task_list << continuation
           false
         else
           @scheduled_count += 1
@@ -30,14 +35,14 @@ module DispatchQueue
         end
       end
 
-      @parent_queue.dispatch_async { _run_task( task, false ) } if schedule_immediately
+      continuation.run() if schedule_immediately
     end
 
-    def dispatch_sync( &task )
+    def dispatch_sync( group:nil, &task )
       mutex, condition = ConditionVariablePool.acquire()
       mutex.synchronize do
 
-        dispatch_async do
+        dispatch_async( group:group ) do
           begin
             task.call()
           ensure
@@ -53,10 +58,15 @@ module DispatchQueue
     end
 
 
-    def dispatch_barrier_async( &task )
+    def dispatch_barrier_async( group:nil, &task )
+      group.enter() if group
+      continuation = Continuation.new( target_queue:@parent_queue, group:group, barrier:true ) do
+        _run_task( task, true )
+      end
+
       barrier_task, tasks = @mutex.synchronize do
         @barrier_count += 1
-        @task_list << [task, true]
+        @task_list << continuation
         resume_pending = ( @scheduled_count == 0 && @barrier_count == 1)
         _sync_get_next_batch() if resume_pending
       end
@@ -64,11 +74,11 @@ module DispatchQueue
       _schedule_next_batch( barrier_task, tasks )
     end
 
-    def dispatch_barrier_sync( &task )
+    def dispatch_barrier_sync( group:nil, &task )
       mutex, condition = ConditionVariablePool.acquire()
       mutex.synchronize do
 
-        dispatch_barrier_async do
+        dispatch_barrier_async( group:group ) do
           begin
             task.call()
           ensure
@@ -118,20 +128,20 @@ module DispatchQueue
 
     def _sync_get_next_batch()
       return nil if @task_list.empty?
-      return @task_list.shift.first if @task_list.first[1] # Barrier task
+      return @task_list.shift if @task_list.first.barrier
 
       tasks = []
-      tasks << @task_list.shift.first while @task_list.first[1] == false
+      tasks << @task_list.shift while !@task_list.first.barrier
       @scheduled_count += tasks.count
       return [nil, tasks]
     end
 
     def _schedule_next_batch( barrier_task, tasks )
       if barrier_task
-        @parent_queue.dispatch_async { _run_task( barrier_task, true ) }
+        barrier_task.run()
       elsif tasks
         tasks.each do |t|
-          @parent_queue.dispatch_async { _run_task( t, false ) }
+          t.run()
         end
       end
     end

@@ -9,6 +9,8 @@
 
 module DispatchQueue
   class Continuation
+    attr_reader :barrier
+    
     def initialize( target_queue:nil, group:nil, barrier:false, &task )
       @task = task
       @target_queue = target_queue
@@ -17,16 +19,20 @@ module DispatchQueue
     end
 
     def run( default_target_queue:nil, override_target_queue:nil )
-      q = override_target_queue || @target_queue || default_target_queue
-      if q
+      queue = override_target_queue || @target_queue || default_target_queue
+      if queue
         if @barrier
-          q.dispatch_barrier_async( group:group, &@task )
+          queue.dispatch_barrier_async( group:@group, &@task )
         else
-          q.dispatch_async( group:group, &@task )
+          queue.dispatch_async( group:@group, &@task )
         end
-      else
-        task.call()
         @group.leave() if @group
+      else
+        begin
+          @task.call() if @task
+        ensure
+          @group.leave() if @group
+        end
       end
     end
   end # class Continuation

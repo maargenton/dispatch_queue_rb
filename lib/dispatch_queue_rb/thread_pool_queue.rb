@@ -22,9 +22,10 @@ module DispatchQueue
       @idle_count = 0
     end
 
-    def dispatch_async( &b )
+    def dispatch_async( group:nil, &task )
+      group.enter() if group
       @mutex.synchronize do
-        @tasks << b
+        @tasks << Continuation.new( group:group, &task )
         @condition.signal()
         _sync_try_spwan_more_threads()
       end
@@ -66,7 +67,7 @@ module DispatchQueue
         loop do
           task = _pop_task()
           break if task.nil?
-          task.call()
+          task.run()
         end
       ensure
         @mutex.synchronize do
@@ -97,7 +98,7 @@ module DispatchQueue
     def _sync_try_spwan_more_threads()
       return if @worker_threads.count >= @max_threads
       return if @idle_count > 0
-      return if @tasks.count == 0
+      return if @tasks.empty?
 
       thread = _sync_spawn_worker_thread()
       @debug_trace.call( :spawned, {  thread:       thread,

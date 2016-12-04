@@ -44,7 +44,6 @@ module DispatchQueue
 
       it "returns true when leave() is called" do
         subject.enter()
-
         Dispatch.default_queue.dispatch_async do
           sleep( 0.001 )
           subject.leave()
