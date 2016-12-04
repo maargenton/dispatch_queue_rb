@@ -31,6 +31,18 @@ module DispatchQueue
       end
     end
 
+    describe "concurrent_map" do
+      it "returns reslt of concurrently executed block" do
+        start_time = Time.now()
+        result = Dispatch.concurrent_map( 1..10 ) do |i|
+          sleep( 0.001 )
+          i
+        end.must_equal (1..10).to_a
+
+        elapsed_time = Time.now - start_time
+        elapsed_time.must_be :<, 0.005
+      end
+    end
 
   end
 end
