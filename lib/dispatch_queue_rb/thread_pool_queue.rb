@@ -33,6 +33,9 @@ module DispatchQueue
 
     alias_method :dispatch_barrier_async, :dispatch_async
 
+    def dispatch_after( eta, group:nil, &task )
+      TimerPool.default_pool.dispatch_after( eta, group:group, target_queue:self, &task )
+    end
 
     def max_threads
       @mutex.synchronize do

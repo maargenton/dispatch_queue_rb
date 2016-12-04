@@ -9,36 +9,62 @@
 
 module DispatchQueue
   class TimerPool
-    Timer = Struct.new(:eta, :target_queue, :task)
+
+    def self.default_pool
+      @@default_pool
+    end
 
     def initialize()
       @mutex = Mutex.new
       @condition = ConditionVariable.new
       @heap = Heap.new { |a,b| a.eta < b.eta }
       @scheduled_eta = nil
+      # @thread = Thread.new { _thread_main() }
     end
 
-    def schedule_timer( eta, target_queue, task )
+    def dispatch_after( eta, group:nil, target_queue:nil, &task )
+      group.enter() if group
+      target_queue ||= Dispatch.default_queue
+      eta = Time.now + eta if !(Time === eta)
+      continuation = Continuation.new( target_queue:target_queue, group:group, eta:eta, &task )
+
       @mutex.synchronize do
-        @heap.push( Timer.new( eta, target_queue, task ) )
-        @condition.signal() if @scheduled_eta.nil? || eta < @scheduled_eta
+        @heap.push( continuation )
+        if @scheduled_eta.nil? || eta < @scheduled_eta
+          @thread = Thread.new { _thread_main() } if @thread.nil?
+          @condition.signal()
+        end
       end
     end
 
+
+
+  private
     def _thread_main
-      loop do
-        _fire_expired_timers()
-        wait_time = @heap.head.eta - Time.now if !@heap.empty
-        next if wait_time < 0
-        @condition.wait( @mutex, wait_time )
+      @mutex.synchronize do
+        loop do
+          _fire_expired_timers()
+          wait_time = @heap.head.eta - Time.now if !@heap.empty?
+          next if wait_time && wait_time < 0
+
+          idle = @heap.empty?
+          @condition.wait( @mutex, wait_time || 0.01 )
+          if idle && @heap.empty?
+            @thread = nil
+            break
+          end
+        end # loop
       end
     end
 
     def _fire_expired_timers
       while !@heap.empty? && @heap.head.eta < Time.now do
-        timer = @heap.pop
-        timer.target_queue.dispatch_async( &timer.task )
+        continuation = @heap.pop
+        continuation.run()
       end
     end
+
+    @@default_pool = self.new
+
   end # class TimerPool
 end # module DispatchQueue

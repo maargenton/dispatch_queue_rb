@@ -43,6 +43,10 @@ module DispatchQueue
       ConditionVariablePool.release( mutex, condition )
     end
 
+    def dispatch_after( eta, group:nil, &task )
+      TimerPool.default_pool.dispatch_after( eta, group:group, target_queue:self, &task )
+    end
+
     alias_method :dispatch_barrier_async, :dispatch_async
     alias_method :dispatch_barrier_sync, :dispatch_sync
 

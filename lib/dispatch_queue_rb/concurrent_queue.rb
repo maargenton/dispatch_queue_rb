@@ -93,6 +93,10 @@ module DispatchQueue
       ConditionVariablePool.release( mutex, condition )
     end
 
+    def dispatch_after( eta, group:nil, &task )
+      TimerPool.default_pool.dispatch_after( eta, group:group, target_queue:self, &task )
+    end
+
     # def _debug_trace_queue_state( prefix = "" )
     #   puts "%-35s | scheduled: %3d, barrier: %3d, queued: %3d, barrier_head: %-5s" % [
     #     prefix,

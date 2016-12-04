@@ -10,12 +10,14 @@
 module DispatchQueue
   class Continuation
     attr_reader :barrier
-    
-    def initialize( target_queue:nil, group:nil, barrier:false, &task )
+    attr_reader :eta
+
+    def initialize( target_queue:nil, group:nil, barrier:false, eta:nil, &task )
       @task = task
       @target_queue = target_queue
       @group = group
       @barrier = barrier
+      @eta = eta
     end
 
     def run( default_target_queue:nil, override_target_queue:nil )
