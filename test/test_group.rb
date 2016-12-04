@@ -9,6 +9,7 @@
 
 
 require '_test_env.rb'
+require 'timeout'
 
 module DispatchQueue
   describe Group do
@@ -19,31 +20,41 @@ module DispatchQueue
       subject.must_be_instance_of Group
     end
 
+
     describe "wait()" do
-      it "returns immediatly when no work is pending in the group" do
-        subject.wait()
+      it "returns true immediatly when no work is pending in the group" do
+        subject.wait().must_equal true
       end
 
-      it "waits until timeout expires if enter never leaves " do
+      it "waits forever if group enters and never leaves" do
         subject.enter()
 
-        t0 = Time.now
-        subject.wait( timeout:0.001 )
-        dt = Time.now - t0
-
-        dt.must_be :>, 0.001
+        assert_must_timeout do
+          subject.wait()
+        end
       end
 
-      it "waits until timeout expires if enter never leaves " do
+      it "waits until timeout expires and returns false if enter never leaves " do
         subject.enter()
+
+        assert_wont_timeout(0.002) do
+          subject.wait( timeout:0.001 ).must_equal false
+        end
+      end
+
+      it "returns true when leave() is called" do
+        subject.enter()
+
         Dispatch.default_queue.dispatch_async do
           sleep( 0.001 )
           subject.leave()
         end
 
-        subject.wait()
+        assert_wont_timeout(0.002) do
+          subject.wait().must_equal true
+        end
       end
+    end # describe "wait()"
 
-    end
-  end
-end
+  end # describe Group do
+end # module DispatchQueue

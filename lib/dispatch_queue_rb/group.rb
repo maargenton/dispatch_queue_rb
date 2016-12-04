@@ -47,7 +47,9 @@ module DispatchQueue
 
     def wait( timeout:nil )
       @mutex.synchronize do
-        @condition.wait( @mutex, timeout ) if @count != 0
+        return true if @count == 0
+        @condition.wait( @mutex, timeout )
+        return @count == 0
       end
     end
 
