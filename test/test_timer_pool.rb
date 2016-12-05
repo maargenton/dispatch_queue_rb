@@ -12,6 +12,11 @@ require '_test_env.rb'
 
 module DispatchQueue
   describe TimerPool do
+    let( :group )           { DispatchGroup.new }
+    let( :queue )           { SerialQueue.new }
+    let( :reference_time )  { Time.now + 0.005 }
+    let( :result )          { [] }
+
     describe "default_pool" do
       subject { TimerPool.default_pool }
 
@@ -36,13 +41,10 @@ module DispatchQueue
       end
 
       it "execute tasks in eta order" do
-        result = []
-        group = DispatchGroup.new
-        queue = SerialQueue.new
-        subject.dispatch_after( 0.001, target_queue:queue, group:group ) { result << 1 }
-        subject.dispatch_after( 0.003, target_queue:queue, group:group ) { result << 3 }
-        subject.dispatch_after( 0.004, target_queue:queue, group:group ) { result << 4 }
-        subject.dispatch_after( 0.002, target_queue:queue, group:group ) { result << 2 }
+        subject.dispatch_after( reference_time + 0.001, target_queue:queue, group:group ) { result << 1 }
+        subject.dispatch_after( reference_time + 0.003, target_queue:queue, group:group ) { result << 3 }
+        subject.dispatch_after( reference_time + 0.004, target_queue:queue, group:group ) { result << 4 }
+        subject.dispatch_after( reference_time + 0.002, target_queue:queue, group:group ) { result << 2 }
         group.wait()
         result.must_equal [1,2,3,4]
       end
@@ -52,42 +54,67 @@ module DispatchQueue
       subject { SerialQueue.new }
 
       it "execute tasks in eta order" do
-        result = []
-        group = DispatchGroup.new
-        subject.dispatch_after( 0.001, group:group ) { result << 1 }
-        subject.dispatch_after( 0.003, group:group ) { result << 3 }
-        subject.dispatch_after( 0.004, group:group ) { result << 4 }
-        subject.dispatch_after( 0.002, group:group ) { result << 2 }
+        subject.dispatch_after( reference_time + 0.001, group:group ) { result << 1 }
+        subject.dispatch_after( reference_time + 0.003, group:group ) { result << 3 }
+        subject.dispatch_after( reference_time + 0.004, group:group ) { result << 4 }
+        subject.dispatch_after( reference_time + 0.002, group:group ) { result << 2 }
+        group.wait()
+        result.must_equal [1,2,3,4]
+      end
+
+      it "execute more tasks in eta order" do
+        count = 100
+        (1..count).to_a.shuffle.each do |i|
+          subject.dispatch_after( reference_time + i * 0.001, group:group ) { result << i }
+        end
+        group.wait()
+        result.must_equal (1..count).to_a
+      end
+    end
+
+    describe "ThreadQueue.dispatch_after" do
+      subject { ThreadQueue.new }
+
+      it "execute tasks in eta order" do
+        subject.dispatch_after( reference_time + 0.001, group:group ) { result << 1 }
+        subject.dispatch_after( reference_time + 0.003, group:group ) { result << 3 }
+        subject.dispatch_after( reference_time + 0.004, group:group ) { result << 4 }
+        subject.dispatch_after( reference_time + 0.002, group:group ) { result << 2 }
         group.wait()
         result.must_equal [1,2,3,4]
       end
     end
 
+
+    # NOTE: these test may fail occasionally since the target queues uses are
+    # concurrent and only guaranty that work will be scheduled in order.
+    # Execution might be out of order by the time the result is enqueued.
+    # Ordering relies exclusively on the delays introduced by dispatch_after(),
+    # which might not be nough.
+    # Also note that there is no synchronization on writing to result, so this
+    # will result in a race condition in multi-threaded ruby interpretter.
+
     describe "ConcurrentQueue.dispatch_after" do
       subject { ConcurrentQueue.new }
 
       it "execute tasks in eta order" do
-        result = []
-        group = DispatchGroup.new
-        subject.dispatch_after( 0.001, group:group ) { result << 1 }
-        subject.dispatch_after( 0.003, group:group ) { result << 3 }
-        subject.dispatch_after( 0.004, group:group ) { result << 4 }
-        subject.dispatch_after( 0.002, group:group ) { result << 2 }
+        subject.dispatch_after( reference_time + 0.001, group:group ) { result << 1 }
+        subject.dispatch_after( reference_time + 0.003, group:group ) { result << 3 }
+        subject.dispatch_after( reference_time + 0.004, group:group ) { result << 4 }
+        subject.dispatch_after( reference_time + 0.002, group:group ) { result << 2 }
         group.wait()
         result.must_equal [1,2,3,4]
       end
     end
 
     describe "ThreadPoolQueue.dispatch_after" do
-      subject { Dispatch.default_queue }
+      subject { ThreadPoolQueue.new }
 
       it "execute tasks in eta order" do
-        result = []
-        group = DispatchGroup.new
-        subject.dispatch_after( 0.001, group:group ) { result << 1 }
-        subject.dispatch_after( 0.003, group:group ) { result << 3 }
-        subject.dispatch_after( 0.004, group:group ) { result << 4 }
-        subject.dispatch_after( 0.002, group:group ) { result << 2 }
+        subject.dispatch_after( reference_time + 0.001, group:group ) { result << 1 }
+        subject.dispatch_after( reference_time + 0.003, group:group ) { result << 3 }
+        subject.dispatch_after( reference_time + 0.004, group:group ) { result << 4 }
+        subject.dispatch_after( reference_time + 0.002, group:group ) { result << 2 }
         group.wait()
         result.must_equal [1,2,3,4]
       end

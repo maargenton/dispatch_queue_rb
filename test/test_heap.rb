@@ -49,7 +49,7 @@ module DispatchQueue
     end
 
     it "pops elements in sorted order" do
-      count = 20
+      count = 100
       push( subject, *(1..count).to_a.shuffle )
       drain( subject ).must_equal (1..count).to_a
     end
