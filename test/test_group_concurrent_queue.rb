@@ -12,9 +12,9 @@ require '_test_env.rb'
 require 'timeout'
 
 module DispatchQueue
-  describe "Group with ConcurrentQueue" do
+  describe "DispatchGroup with ConcurrentQueue" do
     let( :target_queue ) { ConcurrentQueue.new }
-    let( :group ) { Group.new }
+    let( :group ) { DispatchGroup.new }
 
     it "leaves group when task completes, with single task on idle queue " do
       target_queue.dispatch_async( group:group ) { sleep( 0.002 ) }
@@ -71,5 +71,5 @@ module DispatchQueue
       target_queue.dispatch_barrier_sync( group:group ) { sleep( 0.001 ) }
       assert_wont_timeout( 0.001 ) { group.wait() }
     end
-  end # Group with ConcurrentQueue
+  end # DispatchGroup with ConcurrentQueue
 end # module DispatchQueue

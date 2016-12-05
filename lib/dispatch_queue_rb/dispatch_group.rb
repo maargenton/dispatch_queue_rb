@@ -1,6 +1,6 @@
 # =============================================================================
 #
-# MODULE      : lib/dispatch_queue_rb/group.rb
+# MODULE      : lib/dispatch_queue_rb/dispatch_group.rb
 # PROJECT     : DispatchQueue
 # DESCRIPTION :
 #
@@ -8,7 +8,7 @@
 # =============================================================================
 
 module DispatchQueue
-  class Group
+  class DispatchGroup
     def initialize()
       @mutex = Mutex.new
       @condition = ConditionVariable.new
@@ -65,5 +65,5 @@ module DispatchQueue
       notify_list.each { |continuation| continuation.run() }
     end
 
-  end # class Group
+  end # class DispatchGroup
 end # module DispatchQueue

@@ -12,9 +12,9 @@ require '_test_env.rb'
 require 'timeout'
 
 module DispatchQueue
-  describe "Group with ThreadPoolQueue" do
+  describe "DispatchGroup with ThreadPoolQueue" do
     let( :target_queue ) { Dispatch.default_queue }
-    let( :group ) { Group.new }
+    let( :group ) { DispatchGroup.new }
 
     it "leaves group when task completes, with single task on idle queue " do
       target_queue.dispatch_async( group:group ) { sleep( 0.002 ) }
@@ -30,5 +30,5 @@ module DispatchQueue
       assert_must_timeout( 0.001 ) { group.wait() }
       assert_wont_timeout( 0.020 ) { group.wait() }
     end
-  end # Group with ThreadPoolQueue
+  end # DispatchGroup with ThreadPoolQueue
 end # module DispatchQueue

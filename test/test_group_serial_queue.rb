@@ -12,10 +12,10 @@ require '_test_env.rb'
 require 'timeout'
 
 module DispatchQueue
-  describe "Group with SerialQueue" do
+  describe "DispatchGroup with SerialQueue" do
 
     let( :target_queue ) { SerialQueue.new }
-    let( :group ) { Group.new }
+    let( :group ) { DispatchGroup.new }
 
     it "leaves group when task completes, with single task on idle queue " do
       target_queue.dispatch_async( group:group ) { sleep( 0.002 ) }
@@ -29,5 +29,5 @@ module DispatchQueue
       assert_must_timeout( 0.001 ) { group.wait() }
       assert_wont_timeout( 0.005 ) { group.wait() }
     end
-  end # Group with SerialQueue
+  end # DispatchGroup with SerialQueue
 end # module DispatchQueue

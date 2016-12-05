@@ -1,6 +1,6 @@
 # =============================================================================
 #
-# MODULE      : test/test_group.rb
+# MODULE      : test/test_dispatch_group.rb
 # PROJECT     : DispatchQueue
 # DESCRIPTION :
 #
@@ -12,12 +12,12 @@ require '_test_env.rb'
 require 'timeout'
 
 module DispatchQueue
-  describe Group do
+  describe DispatchGroup do
 
-    subject { Group.new }
+    subject { DispatchGroup.new }
 
     it "can create a new group" do
-      subject.must_be_instance_of Group
+      subject.must_be_instance_of DispatchGroup
     end
 
 
@@ -55,5 +55,5 @@ module DispatchQueue
       end
     end # describe "wait()"
 
-  end # describe Group do
+  end # describe DispatchGroup do
 end # module DispatchQueue

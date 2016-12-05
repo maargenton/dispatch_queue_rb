@@ -37,7 +37,7 @@ module DispatchQueue
 
       it "execute tasks in eta order" do
         result = []
-        group = Group.new
+        group = DispatchGroup.new
         queue = SerialQueue.new
         subject.dispatch_after( 0.001, target_queue:queue, group:group ) { result << 1 }
         subject.dispatch_after( 0.003, target_queue:queue, group:group ) { result << 3 }
@@ -53,7 +53,7 @@ module DispatchQueue
 
       it "execute tasks in eta order" do
         result = []
-        group = Group.new
+        group = DispatchGroup.new
         subject.dispatch_after( 0.001, group:group ) { result << 1 }
         subject.dispatch_after( 0.003, group:group ) { result << 3 }
         subject.dispatch_after( 0.004, group:group ) { result << 4 }
@@ -68,7 +68,7 @@ module DispatchQueue
 
       it "execute tasks in eta order" do
         result = []
-        group = Group.new
+        group = DispatchGroup.new
         subject.dispatch_after( 0.001, group:group ) { result << 1 }
         subject.dispatch_after( 0.003, group:group ) { result << 3 }
         subject.dispatch_after( 0.004, group:group ) { result << 4 }
@@ -83,7 +83,7 @@ module DispatchQueue
 
       it "execute tasks in eta order" do
         result = []
-        group = Group.new
+        group = DispatchGroup.new
         subject.dispatch_after( 0.001, group:group ) { result << 1 }
         subject.dispatch_after( 0.003, group:group ) { result << 3 }
         subject.dispatch_after( 0.004, group:group ) { result << 4 }

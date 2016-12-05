@@ -22,7 +22,7 @@ module DispatchQueue
       end
 
       def concurrent_map( input_array, target_queue:nil, &task )
-        group = Group.new
+        group = DispatchGroup.new
         target_queue ||= default_queue
 
         output_results = input_array.map do |e|
