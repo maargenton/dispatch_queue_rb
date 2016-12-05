@@ -14,9 +14,28 @@ module DispatchQueue
   describe Dispatch do
 
     describe "default_queue" do
+      it "is a ThreadPoolQueue" do
+        Dispatch.default_queue.must_be_instance_of ThreadPoolQueue
+      end
+
       it "must remain the same" do
         q1 = Dispatch.default_queue
         q2 = Dispatch.default_queue
+
+        q1.wont_be_nil
+        q2.wont_be_nil
+        q2.must_be_same_as q1
+      end
+    end
+
+    describe "main_queue" do
+      it "is a ThreadQueue" do
+        Dispatch.main_queue.must_be_instance_of ThreadQueue
+      end
+
+      it "must remain the same" do
+        q1 = Dispatch.main_queue
+        q2 = Dispatch.main_queue
 
         q1.wont_be_nil
         q2.wont_be_nil

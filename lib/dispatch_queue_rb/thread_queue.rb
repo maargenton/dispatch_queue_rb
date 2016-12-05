@@ -36,12 +36,14 @@ module DispatchQueue
 
   private
     def _thread_main
+      Thread.current[:current_queue] = self
+
       @mutex.synchronize do
         loop do
           @tasks.shift.run() if !@tasks.empty?
 
           next if !@tasks.empty?
-          @condition.wait( @mutex, thread_termination_delay )
+          @condition.wait( @mutex, @thread_termination_delay )
 
           if @tasks.empty?
             @thread = nil

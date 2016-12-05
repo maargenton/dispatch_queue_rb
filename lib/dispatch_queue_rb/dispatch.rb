@@ -21,6 +21,10 @@ module DispatchQueue
         @@default_queue
       end
 
+      def main_queue
+        @@main_queue
+      end
+
       def synchronize()
         mutex, condition = ConditionVariablePool.acquire()
         result = nil
@@ -55,6 +59,7 @@ module DispatchQueue
 
     private
       @@default_queue = ThreadPoolQueue.new()
+      @@main_queue = ThreadQueue.new()
 
     end # class << self
   end # class Dispatch
