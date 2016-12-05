@@ -1,6 +1,6 @@
 # =============================================================================
 #
-# MODULE      : lib/dispatch_queue_rb/dispatch_sync_mixin.rb
+# MODULE      : lib/dispatch_queue_rb/mixins/dispatch_sync_impl.rb
 # PROJECT     : DispatchQueue
 # DESCRIPTION :
 #
@@ -8,7 +8,7 @@
 # =============================================================================
 
 module DispatchQueue
-  module DispatchSyncMixin
+  module DispatchSyncImpl
 
     def dispatch_sync( group:nil, &task )
       mutex, condition = ConditionVariablePool.acquire()
@@ -38,5 +38,5 @@ module DispatchQueue
       result
     end
 
-  end # class DispatchSyncMixin
+  end # class DispatchSyncImpl
 end # module DispatchQueue

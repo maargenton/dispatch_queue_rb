@@ -1,6 +1,6 @@
 # =============================================================================
 #
-# MODULE      : lib/dispatch_queue_rb/continuation.rb
+# MODULE      : lib/dispatch_queue_rb/internal/continuation.rb
 # PROJECT     : DispatchQueue
 # DESCRIPTION :
 #

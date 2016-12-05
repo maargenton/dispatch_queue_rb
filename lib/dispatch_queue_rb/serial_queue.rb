@@ -30,8 +30,8 @@ module DispatchQueue
 
     alias_method :dispatch_barrier_async, :dispatch_async
 
-    include DispatchSyncMixin
-    include DispatchAfterMixin
+    include DispatchSyncImpl
+    include DispatchAfterImpl
 
 
 

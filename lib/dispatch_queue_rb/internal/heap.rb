@@ -1,6 +1,6 @@
 # =============================================================================
 #
-# MODULE      : lib/dispatch_queue_rb/heap.rb
+# MODULE      : lib/dispatch_queue_rb/internal/heap.rb
 # PROJECT     : DispatchQueue
 # DESCRIPTION :
 #

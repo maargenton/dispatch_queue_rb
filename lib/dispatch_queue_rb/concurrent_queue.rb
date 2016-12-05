@@ -55,8 +55,8 @@ module DispatchQueue
       _schedule_next_batch( barrier_task, tasks )
     end
 
-    include DispatchSyncMixin
-    include DispatchAfterMixin
+    include DispatchSyncImpl
+    include DispatchAfterImpl
 
 
     # def _debug_trace_queue_state( prefix = "" )

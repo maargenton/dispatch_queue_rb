@@ -1,6 +1,6 @@
 # =============================================================================
 #
-# MODULE      : lib/dispatch_queue_rb/dispatch_after_mixin.rb
+# MODULE      : lib/dispatch_queue_rb/mixins/dispatch_after_impl.rb
 # PROJECT     : DispatchQueue
 # DESCRIPTION :
 #
@@ -8,11 +8,11 @@
 # =============================================================================
 
 module DispatchQueue
-  module DispatchAfterMixin
+  module DispatchAfterImpl
 
     def dispatch_after( eta, group:nil, &task )
       TimerPool.default_pool.dispatch_after( eta, group:group, target_queue:self, &task )
     end
 
-  end # class DispatchAfterMixin
+  end # class DispatchAfterImpl
 end # module DispatchQueue

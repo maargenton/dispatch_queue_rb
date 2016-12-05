@@ -1,6 +1,6 @@
 # =============================================================================
 #
-# MODULE      : lib/dispatch_queue_rb/thread_pool_queue.rb
+# MODULE      : lib/dispatch_queue_rb/internal/thread_pool_queue.rb
 # PROJECT     : DispatchQueue
 # DESCRIPTION :
 #
@@ -34,8 +34,8 @@ module DispatchQueue
 
     alias_method :dispatch_barrier_async, :dispatch_async
 
-    include DispatchSyncMixin
-    include DispatchAfterMixin
+    include DispatchSyncImpl
+    include DispatchAfterImpl
 
 
 

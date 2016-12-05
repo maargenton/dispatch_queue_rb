@@ -1,6 +1,6 @@
 # =============================================================================
 #
-# MODULE      : lib/dispatch_queue_rb/timer_pool.rb
+# MODULE      : lib/dispatch_queue_rb/internal/timer_pool.rb
 # PROJECT     : DispatchQueue
 # DESCRIPTION :
 #

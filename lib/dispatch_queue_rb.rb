@@ -10,16 +10,16 @@
 require 'set'
 
 require_relative 'dispatch_queue_rb/version.rb'
-require_relative 'dispatch_queue_rb/condition_variable_pool.rb'
-require_relative 'dispatch_queue_rb/heap.rb'
-require_relative 'dispatch_queue_rb/continuation.rb'
 
-require_relative 'dispatch_queue_rb/dispatch_sync_mixin.rb'
-require_relative 'dispatch_queue_rb/dispatch_after_mixin.rb'
+require_relative 'dispatch_queue_rb/mixins/dispatch_sync_impl.rb'
+require_relative 'dispatch_queue_rb/mixins/dispatch_after_impl.rb'
 
-require_relative 'dispatch_queue_rb/thread_pool_queue.rb'
-require_relative 'dispatch_queue_rb/timer_pool.rb'
-require_relative 'dispatch_queue_rb/thread_queue.rb'
+require_relative 'dispatch_queue_rb/internal/condition_variable_pool.rb'
+require_relative 'dispatch_queue_rb/internal/heap.rb'
+require_relative 'dispatch_queue_rb/internal/continuation.rb'
+require_relative 'dispatch_queue_rb/internal/thread_pool_queue.rb'
+require_relative 'dispatch_queue_rb/internal/timer_pool.rb'
+require_relative 'dispatch_queue_rb/internal/thread_queue.rb'
 
 require_relative 'dispatch_queue_rb/dispatch.rb'
 require_relative 'dispatch_queue_rb/serial_queue.rb'

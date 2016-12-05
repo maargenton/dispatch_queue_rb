@@ -1,6 +1,6 @@
 # =============================================================================
 #
-# MODULE      : lib/dispatch_queue_rb/condition_variable_pool.rb
+# MODULE      : lib/dispatch_queue_rb/internal/condition_variable_pool.rb
 # PROJECT     : DispatchQueue
 # DESCRIPTION :
 #
