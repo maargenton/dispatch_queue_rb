@@ -18,6 +18,7 @@ module DispatchQueue
 
     def enter()
       @mutex.synchronize { @count += 1 }
+      self
     end
 
     def leave()
@@ -31,6 +32,7 @@ module DispatchQueue
       end
 
       _schedule_notify_list( notify_list ) if notify_list
+      self
     end
 
     def notify( target_queue:nil, barrier:false, group:nil, &task )
@@ -43,6 +45,7 @@ module DispatchQueue
           @notify_list << continuation
         end
       end
+      self
     end
 
     def wait( timeout:nil )

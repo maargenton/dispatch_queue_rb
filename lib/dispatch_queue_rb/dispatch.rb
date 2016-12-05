@@ -21,6 +21,21 @@ module DispatchQueue
         @@default_queue
       end
 
+      def synchronize()
+        mutex, condition = ConditionVariablePool.acquire()
+        result = nil
+        result_handler = Proc.new { |r|
+          result = r;
+          mutex.synchronize { condition.signal() }
+        }
+        mutex.synchronize do
+          yield result_handler
+          condition.wait( mutex )
+        end
+        ConditionVariablePool.release( mutex, condition )
+        result
+      end
+
       def concurrent_map( input_array, target_queue:nil, &task )
         group = DispatchGroup.new
         target_queue ||= default_queue

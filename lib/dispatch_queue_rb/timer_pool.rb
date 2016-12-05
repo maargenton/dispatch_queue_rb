@@ -19,7 +19,7 @@ module DispatchQueue
       @condition = ConditionVariable.new
       @heap = Heap.new { |a,b| a.eta < b.eta }
       @scheduled_eta = nil
-      # @thread = Thread.new { _thread_main() }
+      @thread = nil
     end
 
     def dispatch_after( eta, group:nil, target_queue:nil, &task )
@@ -35,6 +35,7 @@ module DispatchQueue
           @condition.signal()
         end
       end
+      target_queue
     end
 
 

@@ -8,7 +8,7 @@
 # =============================================================================
 
 module DispatchQueue
-  class ConditionVariablePool
+  module ConditionVariablePool
     class << self
 
       @@mutex = Mutex.new

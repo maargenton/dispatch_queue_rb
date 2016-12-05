@@ -25,30 +25,15 @@ module DispatchQueue
       end
 
       continuation.run() if _try_activate_or_enqueue( continuation )
-    end
-
-    def dispatch_sync( group:nil, &task )
-      mutex, condition = ConditionVariablePool.acquire()
-      mutex.synchronize do
-
-        dispatch_async( group:group ) do
-          task.call()
-          mutex.synchronize do
-            condition.signal()
-          end
-        end
-
-        condition.wait( mutex )
-      end
-      ConditionVariablePool.release( mutex, condition )
-    end
-
-    def dispatch_after( eta, group:nil, &task )
-      TimerPool.default_pool.dispatch_after( eta, group:group, target_queue:self, &task )
+      self
     end
 
     alias_method :dispatch_barrier_async, :dispatch_async
-    alias_method :dispatch_barrier_sync, :dispatch_sync
+
+    include DispatchSyncMixin
+    include DispatchAfterMixin
+
+
 
   private
     def _try_activate_or_enqueue( continuation )

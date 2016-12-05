@@ -29,13 +29,15 @@ module DispatchQueue
         @condition.signal()
         _sync_try_spwan_more_threads()
       end
+      self
     end
 
     alias_method :dispatch_barrier_async, :dispatch_async
 
-    def dispatch_after( eta, group:nil, &task )
-      TimerPool.default_pool.dispatch_after( eta, group:group, target_queue:self, &task )
-    end
+    include DispatchSyncMixin
+    include DispatchAfterMixin
+
+
 
     def max_threads
       @mutex.synchronize do
@@ -59,10 +61,6 @@ module DispatchQueue
 
 
   private
-    def _hw_ncpu()
-      `sysctl -n hw.ncpu`.to_i rescue 1
-    end
-
     def _worker_main()
       Thread.current[:current_queue] = self
 

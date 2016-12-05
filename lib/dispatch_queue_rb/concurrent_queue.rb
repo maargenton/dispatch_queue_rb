@@ -36,27 +36,8 @@ module DispatchQueue
       end
 
       continuation.run() if schedule_immediately
+      self
     end
-
-    def dispatch_sync( group:nil, &task )
-      mutex, condition = ConditionVariablePool.acquire()
-      mutex.synchronize do
-
-        dispatch_async( group:group ) do
-          begin
-            task.call()
-          ensure
-            mutex.synchronize do
-              condition.signal()
-            end
-          end
-        end
-
-        condition.wait( mutex )
-      end
-      ConditionVariablePool.release( mutex, condition )
-    end
-
 
     def dispatch_barrier_async( group:nil, &task )
       group.enter() if group
@@ -74,28 +55,9 @@ module DispatchQueue
       _schedule_next_batch( barrier_task, tasks )
     end
 
-    def dispatch_barrier_sync( group:nil, &task )
-      mutex, condition = ConditionVariablePool.acquire()
-      mutex.synchronize do
+    include DispatchSyncMixin
+    include DispatchAfterMixin
 
-        dispatch_barrier_async( group:group ) do
-          begin
-            task.call()
-          ensure
-            mutex.synchronize do
-              condition.signal()
-            end
-          end
-        end
-
-        condition.wait( mutex )
-      end
-      ConditionVariablePool.release( mutex, condition )
-    end
-
-    def dispatch_after( eta, group:nil, &task )
-      TimerPool.default_pool.dispatch_after( eta, group:group, target_queue:self, &task )
-    end
 
     # def _debug_trace_queue_state( prefix = "" )
     #   puts "%-35s | scheduled: %3d, barrier: %3d, queued: %3d, barrier_head: %-5s" % [

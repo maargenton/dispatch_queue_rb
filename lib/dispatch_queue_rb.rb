@@ -14,8 +14,12 @@ require_relative 'dispatch_queue_rb/condition_variable_pool.rb'
 require_relative 'dispatch_queue_rb/heap.rb'
 require_relative 'dispatch_queue_rb/continuation.rb'
 
+require_relative 'dispatch_queue_rb/dispatch_sync_mixin.rb'
+require_relative 'dispatch_queue_rb/dispatch_after_mixin.rb'
+
 require_relative 'dispatch_queue_rb/thread_pool_queue.rb'
 require_relative 'dispatch_queue_rb/timer_pool.rb'
+require_relative 'dispatch_queue_rb/thread_queue.rb'
 
 require_relative 'dispatch_queue_rb/dispatch.rb'
 require_relative 'dispatch_queue_rb/serial_queue.rb'
