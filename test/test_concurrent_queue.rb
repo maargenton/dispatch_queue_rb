@@ -19,10 +19,6 @@ module DispatchQueue
     let( :logger )        { Proc.new { |e, d| lock.synchronize { log << [e, d] } } }
     subject               { ConcurrentQueue.new }
 
-    before do
-      Thread.abort_on_exception = true
-    end
-
     it "can initialize a serial queue" do
       subject.must_be_instance_of ConcurrentQueue
     end

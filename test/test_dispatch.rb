@@ -12,7 +12,6 @@ require '_test_env.rb'
 
 module DispatchQueue
   describe Dispatch do
-
     describe "default_queue" do
       it "is a ThreadPoolQueue" do
         Dispatch.default_queue.must_be_instance_of ThreadPoolQueue
@@ -47,6 +46,31 @@ module DispatchQueue
       it "returns the number of cpu cores available" do
         Dispatch.ncpu.must_be_kind_of Integer
         Dispatch.ncpu.must_be :>, 1
+      end
+    end
+
+    describe "synchronize" do
+      it "synchronizes an asynchronous operation with the calling thread" do
+        done = false
+        assert_wont_timeout do
+          Dispatch.synchronize do |completion_handler|
+            Dispatch.default_queue.dispatch_async do
+              done = true
+              completion_handler.call()
+            end
+          end
+        end
+        done.must_equal true
+      end
+
+      it "return its result to the calling thread" do
+        assert_wont_timeout do
+          Dispatch.synchronize do |completion_handler|
+            Dispatch.default_queue.dispatch_async do
+              completion_handler.call( :result )
+            end
+          end.must_equal :result
+        end
       end
     end
 

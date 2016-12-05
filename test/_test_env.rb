@@ -20,6 +20,9 @@ require 'lib/dispatch_queue_rb.rb'
 # Minitest.backtrace_filter
 # Minitest::Reporters.use! [Minitest::Reporters::DefaultReporter.new( color:true ), Minitest::Reporters::JUnitReporter.new]
 
+
+Thread.abort_on_exception = true
+
 module Minitest::Assertions
   def assert_must_timeout( timeout_delay = 0.001 )
     success = false
@@ -31,7 +34,6 @@ module Minitest::Assertions
       success = true
     end
 
-    # assert success, "Expected operation to not complete within #{timeout_delay}s, but did"
     assert success, "Expected operation to not complete within #{timeout_delay}s, but did"
   end
 
@@ -45,7 +47,6 @@ module Minitest::Assertions
       success = false
     end
 
-    # assert success, "Expected operation to not complete within #{timeout_delay}s, but did"
     assert success, "Expected operation to complete within #{timeout_delay}s, but did not"
   end
 end
