@@ -9,15 +9,15 @@
 
 ## Overview
 
-DispatchQueueRb is a pure ruby implementation of the Apple Grand Central Dispatch
+DispatchQueueRb is a pure ruby implementation of the Grand Central Dispatch
 concurrency primitives, using Ruby threads and blocking synchronization primitives
 like Mutex and ConditionVariable.
 
 It implements serial and concurrent queues, with synchronous, asynchronous,
-barrier and delayed dispatch methods. It provides dispatch groups for
-synchronization. It also provides a default thread pool concurrent queue,
-scaled to the number of available cpu cores, used by default by all the other
-queues to er form the actual work.
+barrier and delayed dispatch methods. All queues dispatch methods support an
+optional dispatch groups to synchronize on completion of a group of tasks.
+It also provides a thread pool based concurrent queue, scaled to the number
+of available cpu cores, and used by default to schedule the actual work.
 
 Beside a highly optimized lock-free C implementation with libdispatch,
 Grand Central Dispatch is a shift of paradigm that expresses concurrent
