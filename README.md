@@ -1,18 +1,44 @@
-# FolderTemplate
+# DispatchQueueRb
 
 [![Gem Version](https://badge.fury.io/rb/dispatch_queue_rb.svg)](https://badge.fury.io/rb/dispatch_queue_rb)
-[![Build Status](https://travis-ci.org/{{travis_account}}/dispatch_queue_rb.svg?branch=master)](https://travis-ci.org/{{travis_account}}/dispatch_queue_rb)
-[![Code Climate](https://codeclimate.com/github/{{github_account}}/dispatch_queue_rb/badges/gpa.svg)](https://codeclimate.com/github/{{github_account}}/dispatch_queue_rb)
-[![Issue Count](https://codeclimate.com/github/{{github_account}}/dispatch_queue_rb/badges/issue_count.svg)](https://codeclimate.com/github/{{github_account}}/dispatch_queue_rb)
+[![Build Status](https://travis-ci.org/marcus999/dispatch_queue_rb.svg?branch=master)](https://travis-ci.org/marcus999/dispatch_queue_rb)
+[![Code Climate](https://codeclimate.com/github/marcus999/dispatch_queue_rb/badges/gpa.svg)](https://codeclimate.com/github/marcus999/dispatch_queue_rb)
+[![Issue Count](https://codeclimate.com/github/marcus999/dispatch_queue_rb/badges/issue_count.svg)](https://codeclimate.com/github/marcus999/dispatch_queue_rb)
 
 
 
+## Overview
 
-# Project
+DispatchQueueRb is a pure ruby implementation of the Apple Grand Central Dispatch
+concurrency primitives, using Ruby threads and blocking synchronization primitives
+like Mutex and ConditionVariable.
 
-Pure ruby implementation of GCD dispatch_queue concurrency primitives.
+It implements serial and concurrent queues, with synchronous, asynchronous,
+barrier and delayed dispatch methods. It provides dispatch groups for
+synchronization. It also provides a default thread pool concurrent queue,
+scaled to the number of available cpu cores, used by default by all the other
+queues to er form the actual work.
 
-Implements:
+Beside a highly optimized lock-free C implementation with libdispatch,
+Grand Central Dispatch is a shift of paradigm that expresses concurrent
+programming concepts in terms of tasks that must be serialized with respect to
+each other and tasks that can be performed concurrently.
+
+Using threads, concurrency is usually defining with a fixed set of threads that
+perform specific tasks, and by passing data between threads using message queues
+and producer / consumer patterns. The flow of data and the sequence of
+operations is often very inflexible because what threads do and where they
+write their result to is often frozen at design time.
+
+With dispatch queues, concurrency is expressed by scheduling work items to
+serial and concurrent queues. The work that needs to be performed in the
+context of a queue is not frozen in a dedicated thread, but passed as a block
+of code to the dispatch method call. That block of code captures the data it
+needs to execute, knows how to access global immutable data, and defines what
+to do with the result.
+
+
+### Implements:
   - SerialQueue and ConcurrentQueue
   - dispatch_async() and dispatch_sync()
   - dispatch_barrier_async() and dispatch_barrier_sync()
@@ -23,7 +49,7 @@ Implements:
     a thread pool, scaled to the number of available cpu cores. It is the
     default parent_queue for all private queues.
 
-Key differences and not supported features:
+### Key differences and not supported features:
   - Implemented with Ruby threading primitives (Mutex, ConditionVariable) instead
     of high-performance lock-free algorithms
   - Aimed at MRI ruby 2.x, where ruby code cannot execute concurrently across
@@ -31,16 +57,11 @@ Key differences and not supported features:
   - Dispatch.default_queue does not monitor thread activity and does not spawn
     more threads to compensate for blocked threads.
 
-Version 1.0 limitations:
+### Version 1.0 limitations:
   - Does not implement an equivalent for dispatch_source primitives.
   - Does not support suspend / resume operations
   - Does not provide multiple priority levels for global queues
 
-
-
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/dispatch_queue_rb`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
 
 ## Installation
 
