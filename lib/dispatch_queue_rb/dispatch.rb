@@ -14,7 +14,11 @@ module DispatchQueue
 
     class << self
       def ncpu()
-        @@ncpu ||= `sysctl -n hw.ncpu`.to_i rescue 1
+        @@ncpu ||= case RUBY_PLATFORM
+        when /darwin|freebsd/ then  `sysctl -n hw.ncpu`.to_i
+        when /linux/ then           `cat /proc/cpuinfo | grep processor | wc -l`.to_i
+        else                        2
+        end
       end
 
       def default_queue

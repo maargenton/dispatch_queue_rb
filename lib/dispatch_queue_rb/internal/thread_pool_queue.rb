@@ -11,7 +11,7 @@ module DispatchQueue
   class ThreadPoolQueue
 
     def initialize( max_threads:nil, debug_trace:nil, thread_termination_delay:0.01 )
-      @max_threads = max_threads || Dispatch.ncpu()
+      @max_threads = max_threads || [Dispatch.ncpu(), 2].max
       @debug_trace = debug_trace
       @thread_termination_delay = thread_termination_delay
 
