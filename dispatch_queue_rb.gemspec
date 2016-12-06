@@ -15,10 +15,16 @@ Gem::Specification.new do |spec|
   spec.version      = DispatchQueue::VERSION
   spec.authors      = ["Marc-Antoine Argenton"]
   spec.email        = ["maargenton.dev@gmail.com"]
-  spec.summary      = "Pure ruby implementation of GCD dispatch_queue concurrency primitives."
+  spec.summary      = "Pure ruby implementation of Grand Central Dispatch concurrency primitives."
   spec.description  = %q{
+    DispatchQueueRb is a pure ruby implementation of Grand Central Dispatch concurrency primitives.
+    It implements serial and concurrent queues, with synchronous, asynchronous,
+    barrier and delayed dispatch methods. All queues dispatch methods support an
+    optional dispatch groups to synchronize on completion of a group of tasks.
+    It also provides a thread pool based concurrent queue, scaled to the number
+    of available cpu cores, and used by default to schedule the actual work.
                       }.gsub( /\s+/, ' ').strip
-  spec.homepage     = ""
+  spec.homepage     = "https://github.com/marcus999/dispatch_queue_rb"
 
   spec.files        = Dir['[A-Z]*', 'rakefile.rb', '*.gemspec'].reject { |f| f =~ /.lock/ }
   spec.files        += Dir['bin/**', 'lib/**/*.rb', 'test/**/*.rb', 'spec/**/*.rb', 'features/**/*.rb']
